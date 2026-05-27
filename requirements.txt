@@ -1,0 +1,22 @@
+flask==3.0.3
+pillow>=10.4.0
+numpy>=1.26.0
+
+# Tamper model
+tensorflow>=2.15.0
+
+# Heatmap generation (ELA colourmap overlay)
+opencv-python-headless>=4.9.0
+
+# Captioning
+torch>=2.2.0
+transformers>=4.41.0
+
+# AI classifier
+torchvision>=0.17.0
+timm>=1.0.7
+
+gunicorn>=21.2.0
+
+# PDF reports
+reportlab>=4.1.0

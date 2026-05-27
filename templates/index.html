@@ -1,0 +1,368 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Image Authenticity Lab</title>
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body>
+
+  <div class="bg-orbs" aria-hidden="true">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
+  <div class="layout">
+
+    <!-- ── SIDEBAR ── -->
+    <aside class="sidebar">
+      <div class="sidebar-inner">
+
+        <div class="sidebar-brand">
+          <svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3 20.25h18A1.75 1.75 0 0022.75 18.5V5.75A1.75 1.75 0 0021 4H3A1.75 1.75 0 001.25 5.75v12.75A1.75 1.75 0 003 20.25z"/>
+          </svg>
+          <span>Image Authenticity Lab</span>
+        </div>
+
+        <nav class="sidebar-nav">
+          <button class="nav-item active" data-target="tab-forgery">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"/></svg>
+            Forgery Detection
+          </button>
+          <button class="nav-item" data-target="tab-ai">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.091zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456z"/></svg>
+            AI Classification
+          </button>
+          <button class="nav-item" data-target="tab-models">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8.25 3v1.5M4.5 8.25H3m18 0h-1.5M4.5 12H3m18 0h-1.5m-15 3.75H3m18 0h-1.5M8.25 19.5V21M12 3v1.5m0 15V21m3.75-18v1.5m0 15V21m-9-1.5h10.5a2.25 2.25 0 002.25-2.25V6.75a2.25 2.25 0 00-2.25-2.25H6.75A2.25 2.25 0 004.5 6.75v10.5a2.25 2.25 0 002.25 2.25zm.75-12h9v9h-9v-9z"/></svg>
+            Model Info
+          </button>
+        </nav>
+
+        <div class="history-section">
+          <div class="history-header">
+            <span>Recent Analyses</span>
+            <button class="history-clear" id="historyClear" title="Clear history">✕</button>
+          </div>
+          <div class="history-list" id="historyList">
+            <div class="history-empty">No analyses yet</div>
+          </div>
+        </div>
+
+        <div class="sidebar-footer">
+          <span class="tech-badge">Flask · ELA+CNN · ViT · BLIP</span>
+        </div>
+
+      </div>
+    </aside>
+
+    <!-- ── MAIN CONTENT ── -->
+    <main class="main-content">
+
+      <!-- ── Forgery Detection Tab ── -->
+      <section id="tab-forgery" class="panel active" role="tabpanel">
+        <div class="page-header">
+          <h1>Forgery Detection</h1>
+          <p>ELA-based CNN analysis to detect image manipulation with heatmap localization.</p>
+        </div>
+
+        <div class="uploader" data-mode="forgery">
+
+          <div class="dropzone" data-dropzone>
+            <input type="file" accept="image/png,image/jpeg" hidden data-file />
+            <div class="dz-content">
+              <div class="dz-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/></svg>
+              </div>
+              <div class="dz-title">Drop image here</div>
+              <div class="dz-sub">or <span class="linkish" data-browse>browse file</span> — JPG / PNG</div>
+            </div>
+          </div>
+
+          <!-- Small thumbnail after file is selected -->
+          <div class="preview-thumb" hidden data-preview-thumb>
+            <img data-thumb-img alt="Selected" />
+            <div class="preview-thumb-info">
+              <strong data-thumb-name></strong>
+              <span data-thumb-size></span>
+            </div>
+          </div>
+
+          <div class="action-bar">
+            <button class="btn primary" data-process disabled>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 010 1.971l-11.54 6.347a1.125 1.125 0 01-1.667-.985V5.653z"/></svg>
+              Analyse
+            </button>
+            <button class="btn" data-clear disabled>Clear</button>
+            <button class="btn" data-report disabled>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
+              Export PDF
+            </button>
+          </div>
+
+          <div class="status" hidden data-status></div>
+
+          <!--
+            Results grid — hidden until processing completes.
+            Left col: one image card that starts as plain image,
+                      then swaps to ELA comparison slider after processing.
+            Right col: result + captions + metadata, all same gap.
+          -->
+          <div class="results-layout" hidden data-results>
+
+            <div class="images-col">
+              <div class="card image-card">
+
+                <!-- State A: plain uploaded image -->
+                <div data-state-image>
+                  <div class="card-label">Uploaded Image</div>
+                  <img data-display-img alt="Uploaded image" />
+                </div>
+
+                <!-- State B: ELA comparison slider (swaps in after processing) -->
+                <div data-state-slider hidden>
+                  <div class="image-label-row">
+                    <div class="card-label">ELA Heatmap Overlay</div>
+                    <span class="drag-hint">drag to compare</span>
+                  </div>
+                  <div class="slider-wrap" data-slider-wrap>
+                    <img class="slider-img slider-base" data-slider-base alt="Original" />
+                    <div class="slider-overlay" data-slider-overlay>
+                      <img class="slider-img slider-top" data-slider-heatmap alt="ELA heatmap" />
+                    </div>
+                    <div class="slider-handle" data-slider-handle>
+                      <div class="handle-line"></div>
+                      <div class="handle-knob">
+                        <svg viewBox="0 0 20 20" fill="currentColor"><path d="M7 5l-4 5 4 5M13 5l4 5-4 5"/></svg>
+                      </div>
+                      <div class="handle-line"></div>
+                    </div>
+                  </div>
+                  <p class="card-note">Warmer colours indicate regions with higher ELA intensity — possible manipulation.</p>
+                </div>
+
+              </div>
+
+              <!-- ELA Quality Sweep — hidden until processing, revealed by main.js -->
+              <div class="card ela-sweep-card" hidden data-ela-sweep-card>
+                <div class="card-label">
+                  ELA Quality Sweep
+                  <span class="card-label-sub">compression sensitivity at 6 JPEG qualities</span>
+                </div>
+                <div class="ela-sweep-grid" data-ela-sweep-grid></div>
+                <p class="card-note">Lower quality re-saves amplify compression artefacts. Tampered regions remain bright across all qualities.</p>
+              </div>
+
+            </div>
+
+            <div class="data-col">
+              <div class="card result-card">
+                <div class="card-label">Classification Result</div>
+                <div class="result-badge" data-label></div>
+                <div class="conf-row">
+                  <span class="conf-value" data-confidence></span>
+                  <span class="conf-text">confidence</span>
+                </div>
+                <div class="meter"><div class="meter-fill" data-meter></div></div>
+              </div>
+
+              <div class="card">
+                <div class="card-label">Image Caption</div>
+                <p data-caption-image class="caption-text"></p>
+              </div>
+
+              <div class="card">
+                <div class="card-label">Analysis Summary</div>
+                <p data-caption-output class="caption-text"></p>
+              </div>
+
+              <div class="card" hidden data-metadata-card>
+                <div class="card-label">Image Metadata</div>
+                <table class="meta-table" data-meta-table><tbody></tbody></table>
+              </div>
+            </div>
+
+          </div><!-- /results-layout -->
+        </div><!-- /uploader -->
+      </section>
+
+      <!-- ── AI Classification Tab ── -->
+      <section id="tab-ai" class="panel" role="tabpanel">
+        <div class="page-header">
+          <h1>AI Classification</h1>
+          <p>Vision Transformer model trained to distinguish AI-generated images from real photographs.</p>
+        </div>
+
+        <div class="uploader" data-mode="ai">
+
+          <div class="dropzone" data-dropzone>
+            <input type="file" accept="image/png,image/jpeg" hidden data-file />
+            <div class="dz-content">
+              <div class="dz-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/></svg>
+              </div>
+              <div class="dz-title">Drop image here</div>
+              <div class="dz-sub">or <span class="linkish" data-browse>browse file</span> — JPG / PNG</div>
+            </div>
+          </div>
+
+          <div class="preview-thumb" hidden data-preview-thumb>
+            <img data-thumb-img alt="Selected" />
+            <div class="preview-thumb-info">
+              <strong data-thumb-name></strong>
+              <span data-thumb-size></span>
+            </div>
+          </div>
+
+          <div class="action-bar">
+            <button class="btn primary" data-process disabled>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 010 1.971l-11.54 6.347a1.125 1.125 0 01-1.667-.985V5.653z"/></svg>
+              Analyse
+            </button>
+            <button class="btn" data-clear disabled>Clear</button>
+            <button class="btn" data-report disabled>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
+              Export PDF
+            </button>
+          </div>
+
+          <div class="status" hidden data-status></div>
+
+          <div class="results-layout" hidden data-results>
+
+            <div class="images-col">
+              <div class="card image-card">
+                <div data-state-image>
+                  <div class="card-label">Uploaded Image</div>
+                  <img data-display-img alt="Uploaded image" />
+                </div>
+              </div>
+            </div>
+
+            <div class="data-col">
+              <div class="card result-card">
+                <div class="card-label">Classification Result</div>
+                <div class="result-badge" data-label></div>
+                <div class="conf-row">
+                  <span class="conf-value" data-confidence></span>
+                  <span class="conf-text">confidence</span>
+                </div>
+                <div class="meter"><div class="meter-fill" data-meter></div></div>
+              </div>
+
+              <div class="card">
+                <div class="card-label">Image Caption</div>
+                <p data-caption-image class="caption-text"></p>
+              </div>
+
+              <div class="card">
+                <div class="card-label">Analysis Summary</div>
+                <p data-caption-output class="caption-text"></p>
+              </div>
+
+              <div class="card" hidden data-metadata-card>
+                <div class="card-label">Image Metadata</div>
+                <table class="meta-table" data-meta-table><tbody></tbody></table>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Model Info Tab ── -->
+      <section id="tab-models" class="panel" role="tabpanel">
+        <div class="page-header">
+          <h1>Model Information</h1>
+          <p>Technical overview of the machine learning models powering this system.</p>
+        </div>
+
+        <div class="model-grid">
+
+          <div class="model-card">
+            <div class="model-icon model-icon--green">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"/></svg>
+            </div>
+            <div class="model-body">
+              <h3>Forgery Detection Model</h3>
+              <div class="model-tags">
+                <span class="tag">DenseNet121</span><span class="tag">Keras .keras</span><span class="tag">ELA</span>
+              </div>
+              <p>A DenseNet121 trained on Error Level Analysis representations of CASIA 2.0. ELA highlights JPEG compression inconsistencies left behind by image editing. The model was trained with MirroredStrategy on dual T4 GPUs.</p>
+              <div class="model-spec-table">
+                <div class="spec-row"><span>Architecture</span><span>DenseNet121 + FC(1024) + Softmax</span></div>
+                <div class="spec-row"><span>Input Size</span><span>128 × 128 × 3 (ELA)</span></div>
+                <div class="spec-row"><span>Preprocessing</span><span>Error Level Analysis (q=90)</span></div>
+                <div class="spec-row"><span>Training Dataset</span><span>CASIA 2.0</span></div>
+                <div class="spec-row"><span>Output Classes</span><span>REAL · TAMPERED</span></div>
+                <div class="spec-row"><span>ELA Sweep</span><span>q = 95, 90, 85, 80, 75, 70</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="model-card">
+            <div class="model-icon model-icon--purple">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.091z"/></svg>
+            </div>
+            <div class="model-body">
+              <h3>AI Classification Model</h3>
+              <div class="model-tags">
+                <span class="tag">ViT</span><span class="tag">PyTorch .pth</span><span class="tag">Transformer</span>
+              </div>
+              <p>A Vision Transformer (ViT-Base/16) fine-tuned to classify images as real or AI-generated. Patch-based attention detects global structural inconsistencies common in generative models.</p>
+              <div class="model-spec-table">
+                <div class="spec-row"><span>Architecture</span><span>ViT-Base/Patch16-224</span></div>
+                <div class="spec-row"><span>Input Size</span><span>224 × 224 × 3</span></div>
+                <div class="spec-row"><span>Training Dataset</span><span>CIFAKE</span></div>
+                <div class="spec-row"><span>Output Classes</span><span>REAL · AI GENERATED</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="model-card">
+            <div class="model-icon model-icon--blue">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z"/></svg>
+            </div>
+            <div class="model-body">
+              <h3>Image Captioning Model</h3>
+              <div class="model-tags">
+                <span class="tag">BLIP</span><span class="tag">HuggingFace</span><span class="tag">Vision-Language</span>
+              </div>
+              <p>BLIP generates natural language descriptions using a vision encoder–language decoder architecture, summarising both the uploaded image and the analysis output.</p>
+              <div class="model-spec-table">
+                <div class="spec-row"><span>Model</span><span>blip-image-captioning-base</span></div>
+                <div class="spec-row"><span>Source</span><span>Salesforce / HuggingFace</span></div>
+                <div class="spec-row"><span>Framework</span><span>PyTorch + Transformers</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="model-card pipeline-card">
+            <div class="model-body" style="width:100%">
+              <h3>Analysis Pipeline</h3>
+              <div class="pipeline">
+                <div class="pipe-step"><div class="pipe-num">01</div><div><strong>Upload</strong> — Image saved to static/uploads</div></div>
+                <div class="pipe-arrow">↓</div>
+                <div class="pipe-step"><div class="pipe-num">02</div><div><strong>Preprocess</strong> — ELA transform at q=90 (forgery) or ViT resize/normalize (AI); sweep at 6 qualities for visualisation</div></div>
+                <div class="pipe-arrow">↓</div>
+                <div class="pipe-step"><div class="pipe-num">03</div><div><strong>Inference</strong> — CNN or ViT model predicts label + confidence</div></div>
+                <div class="pipe-arrow">↓</div>
+                <div class="pipe-step"><div class="pipe-num">04</div><div><strong>Caption + Metadata</strong> — BLIP captions; EXIF data extracted</div></div>
+                <div class="pipe-arrow">↓</div>
+                <div class="pipe-step"><div class="pipe-num">05</div><div><strong>Report</strong> — ReportLab PDF (~1–2 MB)</div></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script src="/static/js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+*.pyo
+
+# Models (large binaries — add manually)
+models/*.h5
+models/*.pth
+models/*.pt
+
+# Runtime outputs
+static/uploads/*
+outputs/heatmaps/*
+outputs/reports/*
+!static/uploads/.gitkeep
+!outputs/heatmaps/.gitkeep
+!outputs/reports/.gitkeep
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
