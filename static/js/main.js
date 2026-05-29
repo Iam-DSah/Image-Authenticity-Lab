@@ -6,7 +6,14 @@
   const panels   = document.querySelectorAll(".panel");
 
   function setActivePanel(id) {
-    panels.forEach(p => p.classList.toggle("active", p.id === id));
+    panels.forEach(p => {
+      const on = p.id === id;
+      if (on && !p.classList.contains("active")) {
+        p.classList.add("panel-entering");
+        setTimeout(() => p.classList.remove("panel-entering"), 200);
+      }
+      p.classList.toggle("active", on);
+    });
     navItems.forEach(n => {
       const on = n.dataset.target === id;
       n.classList.toggle("active", on);
@@ -14,6 +21,36 @@
     });
   }
   navItems.forEach(n => n.addEventListener("click", () => setActivePanel(n.dataset.target)));
+
+  // ── Typewriter verdict reveal ─────────────────────────────
+  function typewriterReveal(el, text) {
+    el.dataset.verdict = text.trim().toUpperCase();
+    el.textContent = "";
+    const chars = text.split("");
+    const delay = Math.min(55, 600 / Math.max(chars.length, 1));
+    chars.forEach((ch, i) => setTimeout(() => { el.textContent += ch; }, i * delay));
+  }
+
+  // ── LED confidence meter ──────────────────────────────────
+  function renderLED(meterFill, pct, label) {
+    const container = meterFill.parentElement;
+    container.querySelectorAll(".led-seg").forEach(s => s.remove());
+    const count = 10;
+    const lit = Math.round((Math.max(0, Math.min(100, pct)) / 100) * count);
+    const isAmber = label &&
+      (label.toLowerCase().includes("tampered") || label.toLowerCase().includes("ai"));
+    for (let i = 0; i < count; i++) {
+      const seg = document.createElement("div");
+      seg.className = "led-seg";
+      container.appendChild(seg);
+      if (i < lit) {
+        setTimeout(() => {
+          seg.classList.add("lit");
+          if (isAmber) seg.classList.add("amber");
+        }, i * 40);
+      }
+    }
+  }
 
 
   // ── History (localStorage) ────────────────────
@@ -269,13 +306,13 @@
         if (!res.ok || !data.ok) throw new Error(data.error || "Request failed.");
 
         // ── Populate result fields ──
-        elLabel.textContent = data.label || "—";
+        typewriterReveal(elLabel, data.label || "—");
 
         const pct = typeof data.confidence_percent === "number"
           ? data.confidence_percent
           : Math.round((data.confidence || 0) * 100);
-        elConf.textContent    = pct.toFixed(1) + "%";
-        elMeter.style.width   = Math.max(0, Math.min(100, pct)) + "%";
+        elConf.textContent = pct.toFixed(1) + "%";
+        renderLED(elMeter, pct, data.label);
         elCapImg.textContent  = data.caption_image  || "—";
         elCapOut.textContent  = data.caption_output || "—";
 
